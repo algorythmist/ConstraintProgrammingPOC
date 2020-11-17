@@ -1,6 +1,5 @@
 package com.tecacet.poc.clp;
 
-
 import org.jacop.constraints.Constraint;
 import org.jacop.constraints.Count;
 import org.jacop.core.IntVar;
