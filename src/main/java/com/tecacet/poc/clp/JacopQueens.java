@@ -14,8 +14,7 @@ import org.jacop.search.SmallestDomain;
 
 public class JacopQueens {
 
-    public static void main(String[] args) {
-        int numberOfQueens = 8;
+    public void findAnySolution(int numberOfQueens) {
         Store store = new Store();
         IntVar[] queens = new IntVar[numberOfQueens];
 
@@ -24,15 +23,29 @@ public class JacopQueens {
         for (int i = 0; i < numberOfQueens; i++) {
             queens[i] = new IntVar(store, "Q" + (i + 1), 1, numberOfQueens);
         }
+        applyConstraints(store, queens);
+        Search<IntVar> search = new DepthFirstSearch<>();
+        search.getSolutionListener().searchAll(false);
+        search.getSolutionListener().recordSolutions(true);
+        SelectChoicePoint<IntVar> select = new SimpleSelect<>(queens,
+                new SmallestDomain<>(),
+                new IndomainMiddle<>());
+
+        search.labeling(store, select);
+        search.printAllSolutions();
+        //TODO: How to get a handle of the solution?
+
+    }
+
+    private void applyConstraints(Store store, IntVar[] queens) {
+        int numberOfQueens = queens.length;
         store.impose(new Alldiff(queens));
-            
         for (int i = 0; i < queens.length; i++) {
             for (int j = i + 1; j < queens.length; j++) {
 
                 // Temporary variable denotes the chessboard
-                // field in j-th column which is checked by
-                // i-th column queen
-                // If temporarty variable has value outside
+                // field in j-th column which is checked by i-th column queen
+                // If temporary variable has value outside
                 // range 1..numberQ then i-th column queen
                 // does not check any field in j-th column
 
@@ -49,16 +62,6 @@ public class JacopQueens {
                 store.impose(new XneqY(queens[i], temporary));
             }
         }
-        
-        Search<IntVar> search = new DepthFirstSearch<IntVar>();
-        search.getSolutionListener().searchAll(true);
-        search.getSolutionListener().recordSolutions(true);
-        SelectChoicePoint<IntVar> select = new SimpleSelect<IntVar>(queens,
-                new SmallestDomain<IntVar>(),
-                new IndomainMiddle<IntVar>());
-        
-        boolean result = search.labeling(store, select);
-        search.printAllSolutions();
-        
     }
+
 }

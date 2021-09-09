@@ -9,15 +9,15 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<slf4j.version>1.7.30</slf4j.version>
-		<junit.version>4.13.1</junit.version>
-		<choco-solver.version>3.3.1</choco-solver.version>
-		<jacop.version>3.4.0</jacop.version>
+		<choco-solver.version>4.10.6</choco-solver.version>
+		<jacop.version>4.8.0</jacop.version>
+		<slf4j.version>1.7.31</slf4j.version>
+		<junit.version>4.13.2</junit.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>de.sciss</groupId>
+			<groupId>org.jacop</groupId>
 			<artifactId>jacop</artifactId>
 			<version>${jacop.version}</version>
 		</dependency>
@@ -42,6 +42,6 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+    </dependencies>
 
 </project>
