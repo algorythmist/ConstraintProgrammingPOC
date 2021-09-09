@@ -5,44 +5,50 @@ import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Groups {
+public class GroupFinder {
 
-    public static void main(String[] args) {
-        int size = 4;
+    public List<Solution> findGroups(int order) {
         Model model = new Model("group");
-        IntVar[][] grid = buildGrid(model, size);
-        applyConnectionConstraints(model, grid);
+        IntVar[][] grid = buildGrid(model, order);
+        applyConstraints(model, grid);
 
         // solve it
         Solver solver = model.getSolver();
+
+        List<Solution> solutions = new ArrayList<>();
         while (solver.solve()) {
-            System.out.println(new Solution(model).record());
+            Solution solution = new Solution(model).record();
+            solutions.add(solution);
         }
+        return solutions;
     }
 
-    private static IntVar[][] buildGrid(Model model, int size) {
 
+    private IntVar[][] buildGrid(Model model, int size) {
         IntVar[][] grid = new IntVar[size][size];
-
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 if (row == 0) {
-                    grid[row][col] = model.intVar(col);
+                    grid[row][col] = model.intVar(name(row, col), col);
                 } else if (col == 0) {
-                    grid[row][col] = model.intVar(row);
+                    grid[row][col] = model.intVar(name(row, col), row);
                 } else {
-                    grid[row][col] = model.intVar(String.format("[%s.%s]", row, col), 0, size-1);
+                    grid[row][col] = model.intVar(name(row, col), 0, size-1);
                 }
             }
         }
-
         return grid;
     }
 
-    private static void applyConnectionConstraints(Model model, IntVar[][] grid) {
+    private String name(int row, int column) {
+        return String.format("[%s.%s]", row, column);
+    }
+
+    private static void applyConstraints(Model model, IntVar[][] grid) {
         int size = grid.length;
         // all the rows are different
         for (int i = 0; i != size; i++) {
@@ -59,15 +65,12 @@ public class Groups {
         return Stream.of(grid).map(row -> row[column]).toArray(IntVar[]::new);
     }
 
-    private static void printGrid(IntVar[][] grid) {
+    private static void printSolution(Solution solution, IntVar[][] grid) {
         int size = grid.length;
-        // add each row to the table
+
         for (int row = 0; row != size; row++) {
             for (int column = 0; column != size; column++) {
                 IntVar variable = grid[row][column];
-
-                // this is the number value for the cell, if we're showing the solution,
-                // and this is an original value, we want to wrap it in stars
                 System.out.print(variable.getValue());
             }
             System.out.println();
